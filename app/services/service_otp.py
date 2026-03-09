@@ -8,7 +8,6 @@ def generate_otp(id, length: int = 6, minutes_valid: int = 10):
     try:
         with SessionLocal() as db:
             token = ''.join(secrets.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") for _ in range(length))
-
             user = db.get(User, id)
             if user is None:
                 logging.exception("User id not found")
@@ -30,5 +29,3 @@ def generate_otp(id, length: int = 6, minutes_valid: int = 10):
             return token
     except Exception as e:
         logging.exception(f"Error trying to load your database: \n{e}")
-
-generate_otp(1)
