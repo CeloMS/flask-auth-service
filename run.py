@@ -2,5 +2,5 @@ from app import start
 
 app = start()
 
-if __name__ == "main":
-    app.run()
+if __name__ == "__main__":
+    app.run(debug=True)
