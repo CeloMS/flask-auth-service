@@ -8,4 +8,5 @@ Base = declarative_base()
 
 def load_db():
     from app.models.user import User
+    from app.models.otp import Otp
     Base.metadata.create_all(bind=engine)
