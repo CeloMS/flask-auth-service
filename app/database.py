@@ -5,3 +5,7 @@ DATABASE_URL = "sqlite:///database.db"
 engine = create_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
+
+def load_db():
+    from app.models.user import User
+    Base.metadata.create_all(bind=engine)
