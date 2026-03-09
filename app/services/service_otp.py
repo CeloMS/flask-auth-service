@@ -16,7 +16,6 @@ def generate_otp(id, length: int = 6, minutes_valid: int = 10):
             if entries:
                 for entry in entries:
                     db.delete(entry)
-                    db.commit()
             now = datetime.now(UTC)
             otp = Otp (
                 code = token,
