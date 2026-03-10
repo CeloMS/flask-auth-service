@@ -1,51 +1,34 @@
 from flask import Blueprint, jsonify, request
-from app.database import SessionLocal
-from app.models.user import User
-from datetime import datetime, UTC
+import app.services.user_service as us
 
 user_bp = Blueprint('user', __name__, url_prefix='/users')
 
 @user_bp.route('/', methods = ['POST'])
-def create():
+def add():
     data = request.get_json()
     if not data:
         return jsonify({"error": "No data provided"}), 400
     try:
-        with SessionLocal() as db:
-            if db.query(User).filter_by(email=data['email']).first():
-                return jsonify({"error": f"Email already registered"}), 409
-            now = datetime.now(UTC)
-            user = User(
-                email=data["email"],
-                password_hash=data["password_hash"], #Mudar depois de criar o serviço de password para hash
-                created_at=now,
-                updated_at=now
-            )
-            db.add(user)
-            db.commit()
-            return jsonify(user.to_dict()), 201
+        return jsonify(us.insert(data['email'], data['password']).to_dict()), 201
     except KeyError as err:
         return jsonify({"error": f"Missing argument: {err.args[0]}"}), 400
-    except Exception:
-        return jsonify({"error": "Something has gone wrong"}), 500
+    except Exception as er:
+        return jsonify({"error": f"Something has gone wrong: {er}"}), 500
     
 @user_bp.route('/', methods = ['GET'])
 def get_all():
     try: 
-        with SessionLocal() as db:
-            users = db.query(User).all()
-            return jsonify([u.to_dict() for u in users]), 200
+        return jsonify(us.get_all()), 200
     except Exception:
         return jsonify({"error": "Something has gone wrong"}), 500
 
 @user_bp.route('/<int:user_id>', methods = ['GET'])
-def get_user(user_id):
+def get(user_id):
     try:
-        with SessionLocal() as db:
-            user = db.get(User, user_id)
-            if user is None:
-                return jsonify({"error": "User not found"}), 404
-            return jsonify(user.to_dict()), 200
+        user = us.get_id(user_id)
+        if user is None:
+            return jsonify({"error": "User not found"}), 404
+        return jsonify(user.to_dict()), 200
     except Exception:
         return jsonify({"error": "Something has gone wrong"}), 500
 
@@ -55,16 +38,10 @@ def update(user_id):
     if not data:
         return jsonify({"error": "No data provided"}), 400
     try:
-        with SessionLocal() as db:
-            user = db.get(User, user_id)
-            if user is None:
-                return jsonify({"error": "User not found"}), 404
-            for k, v in data.items():  #Mudar depois de criar o serviço de password para hash
-                if k not in ["id", "created_at"]:
-                    setattr(user, k, v)
-            user.updated_at = datetime.now(UTC)
-            db.commit()
-            return jsonify(user.to_dict()), 200
+        user = us.update_data(user_id, data)
+        if user is None:
+            return jsonify({"error": "User not found"}), 404
+        return jsonify(user.to_dict()), 200
     except KeyError as err:
         return jsonify({"error": f"Missing argument: {err.args[0]}"}), 400
     except Exception:
@@ -73,12 +50,9 @@ def update(user_id):
 @user_bp.route('/<int:user_id>', methods = ['DELETE'])
 def delete(user_id):
     try:
-        with SessionLocal() as db:
-            user = db.get(User, user_id)
-            if user is None:
-                return jsonify({"error": "User not found"}), 404
-            db.delete(user)
-            db.commit()
-            return '', 204
+        response = us.delete_id(user_id)
+        if response is None:
+            return jsonify({"error": "User not found"}), 404
+        return response, 204
     except Exception:
         return jsonify({"error": "Something has gone wrong"}), 500

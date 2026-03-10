@@ -2,6 +2,7 @@ from flask import Flask
 import logging
 from app.database import load_db
 from app.routes.route_user import user_bp
+from app.routes.route_otp import otp_bp
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
 
@@ -27,6 +28,7 @@ def load_env():
 def start():
     app = Flask(__name__)
     app.register_blueprint(user_bp)
+    app.register_blueprint(otp_bp)
     load_db()
     load_env()
     return app
