@@ -47,6 +47,3 @@ def remove(user_id):
 def get(user_id):
     with SessionLocal() as db:
         return db.query(Otp).filter_by(user_id=user_id).first()
-    
-def validate_otp(code: str, user_id: int, delete_after_validation: bool = False, renew_if_fail: bool = True) -> bool:
-    pass
