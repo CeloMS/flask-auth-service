@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime
+from datetime import datetime, UTC
 from app.database import Base
 
 class User(Base):
@@ -8,9 +9,9 @@ class User(Base):
     id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     email = Column(String(255), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
-    created_at = Column(DateTime, nullable=False)
-    updated_at = Column(DateTime, nullable=False)
-    last_login_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(UTC))
+    updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
+    validated = Column(bool, nullable=False, default=False)
 
     def to_dict(self):
         data = {

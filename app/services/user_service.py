@@ -1,38 +1,32 @@
-from app.models.user import User
+from app.repository import user as userbd
+from app.exceptions import EmailAlreadyRegistered, UserNotFound
 from app.utils.utils import transform_to_hash
-from app.database import SessionLocal
-from datetime import datetime, UTC
+
+blacklist = {"id", "created_at"}
 
 def insert(email, password):
-    now = datetime.now(UTC)
-    with SessionLocal() as db:
-        user = User(email=email,password_hash=transform_to_hash(password),created_at=now,updated_at=now)
-        db.add(user)
-        db.commit()
-        return user
-    
+    if userbd.get_by_email(email=email) is not None:
+        raise EmailAlreadyRegistered()
+    return userbd.create(email=email, password_hash=transform_to_hash(password))
+
 def get_id(user_id):
-    with SessionLocal() as db:
-        return db.get(User, user_id)
+    user = userbd.get_by_id(user_id)
+    if user is None:
+        raise UserNotFound()
+    return user
      
 def update_data(user_id, data):
-    with SessionLocal() as db:
-        user = db.get(User, user_id)
-        if user is None:
-            return None   
-        for k, v in data.items():
-            if k not in ["id", "created_at"]:
-                setattr(user, k, v)
-            if k in ["password_hash"]:
-                setattr(user, k, transform_to_hash(data['password']))
-            user.updated_at = datetime.now(UTC)
-            db.commit()
+    data = {k: v for k, v in data.items() if k not in blacklist}
+    if "password" in data:
+        data["password_hash"] = transform_to_hash(data["password"])
+        del data["password"]
+    user = userbd.update_by_id(user_id=user_id, data=data)
+    if user is None:
+        raise UserNotFound()
+    return user
 
 def delete_id(user_id):
-    with SessionLocal() as db:
-        user = db.get(User, user_id)
-        if user is None:
-            return None
-        db.delete(user)
-        db.commit()
-        return ''
+    user = userbd.remove_by_id(user_id=user_id)
+    if user is None:
+        raise UserNotFound()
+    return user

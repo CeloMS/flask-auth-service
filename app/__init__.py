@@ -1,10 +1,23 @@
-from flask import Flask
+from flask import Flask, jsonify
 import logging
 from app.database import load_db
+from app.exceptions import AppError
 from app.routes.route_user import user_bp
 from app.routes.route_otp import otp_bp
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
+
+def create_app():
+    app = Flask(__name__)
+    
+    def handle_app_error(e):
+        return jsonify({"error": e.message}), e.status_code
+    
+    app.register_error_handler(AppError, handle_app_error)
+
+    app.register_blueprint(user_bp)
+    app.register_blueprint(otp_bp)
+    return app
 
 def load_env():
     env_path = find_dotenv()
@@ -26,9 +39,8 @@ def load_env():
         load_dotenv(str(target_path))
 
 def start():
-    app = Flask(__name__)
-    app.register_blueprint(user_bp)
-    app.register_blueprint(otp_bp)
-    load_db()
     load_env()
+    load_db()
+    app = create_app()
     return app
+
