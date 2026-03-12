@@ -6,7 +6,7 @@ otp_bp = Blueprint('otp', __name__, url_prefix='/otps')
 @otp_bp.route('/<int:user_id>', methods = ['POST'])
 def add(user_id):
     try: 
-        token = otp_service.create(user_id)
+        token = otp_service.create(user_id, None)
         return jsonify({"otp": token}), 201
     except Exception as e:
         return jsonify({"error": "Internal server error"}), 500
