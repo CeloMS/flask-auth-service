@@ -18,7 +18,7 @@ class EmailNotConfirmed(AppError):
 
 class UserNotFound(AppError):
     def __init__(self):
-        super().__init__("User not found", 403)
+        super().__init__("User not found", 404)
         
 class OtpExpired(AppError):
     def __init__(self):
@@ -30,7 +30,7 @@ class InvalidOtp(AppError):
 
 class OtpNotFound(AppError):
     def __init__(self):
-        super().__init__("Otp not found", 403)
+        super().__init__("Otp not found", 404)
         
 class BadRequest(AppError):
     def __init__(self, message="Invalid request"):

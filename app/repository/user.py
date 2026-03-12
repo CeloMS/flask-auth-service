@@ -23,7 +23,7 @@ def remove_by_id(user_id):
             return True
         except Exception:
             db.rollback()
-            return False
+            raise
 
 def remove_by_email(email):
     with SessionLocal() as db:

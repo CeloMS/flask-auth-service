@@ -45,4 +45,5 @@ def validate_otp(user_id: int, user_otp: str) -> bool:
     if not checkpw(user_otp.encode('utf-8'), otp.code.encode('utf-8')):
         raise InvalidOtp()
     user_repository.update_by_id(user_id=user_id, data={'validated': True})
+    otp_repository.remove_by_user_id(user_id=user_id)
     return True

@@ -4,6 +4,7 @@ from app.database import Base
 
 class Otp(Base):
     __tablename__ = "otp"
+    __exclude__ = {'code'}
 
     id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
@@ -13,6 +14,6 @@ class Otp(Base):
     def to_dict(self):
         data = {
             column.name: getattr(self, column.name)
-            for column in self.__table__.columns
+            for column in self.__table__.columns if column.name not in self.__exclude__
         }
         return data
