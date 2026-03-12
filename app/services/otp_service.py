@@ -1,4 +1,3 @@
-from email import charset
 import secrets
 from datetime import datetime, UTC, timedelta
 import app.repository.otp as otp_repository
@@ -20,7 +19,8 @@ def create(user_id: int, minutes_valid=None):
     if user_repository.get_by_id(user_id=user_id) is None:
         raise UserNotFound()
     otp_repository.clean_user_id(user_id=user_id)
-    return otp_repository.create(user_id, transform_to_hash(token),  datetime.now(UTC)+ timedelta(minutes=int(minutes_valid)))
+    otp_repository.create(user_id, transform_to_hash(token),  datetime.now(UTC)+ timedelta(minutes=int(minutes_valid)))
+    return token
     
 def remove(user_id):
     otp = otp_repository.remove_by_user_id(user_id)

@@ -10,10 +10,14 @@ def create(user_id:int, token_hash:str, valid_at:datetime):
             code=token_hash,
             valid_at=valid_at
         )
-        db.add(otp)
-        db.commit()
-        return otp
-    
+        try:
+            db.add(otp)
+            db.commit()
+            return otp
+        except Exception:
+            db.rollback()
+            raise
+
 def get(otp_id):
     with SessionLocal() as db:
         return db.get(Otp, otp_id)
@@ -27,24 +31,36 @@ def remove(otp_id):
         otp = db.get(Otp, otp_id)
         if otp is None:
             return None
-        db.delete(otp)
-        db.commit()
-        return True
+        try:
+            db.delete(otp)
+            db.commit()
+            return True
+        except Exception:
+            db.rollback()
+            raise
     
 def remove_by_user_id(user_id):
     with SessionLocal() as db:
         otp = db.query(Otp).filter_by(user_id = user_id).first()
         if otp is None:
             return None
-        db.delete(otp)
-        db.commit()
-        return otp
-    
+        try:
+            db.delete(otp)
+            db.commit()
+            return True
+        except Exception:
+            db.rollback()
+            raise
+
 def clean_user_id(user_id):
     with SessionLocal() as db:
         otps = db.query(Otp).filter_by(user_id = user_id).all()
         if otps:
             for otp in otps:
                 db.delete(otp)
-        db.commit()
-        return True
+        try:
+            db.commit()
+            return True
+        except Exception:
+            db.rollback()
+            raise

@@ -19,7 +19,7 @@ def delete(user_id):
     if otp_service.remove(user_id):
             return '', 204
 
-@otp_bp.route('/<int:user_id>/verify/', methods=['POST'])
+@otp_bp.route('/<int:user_id>/verify', methods=['POST'])
 def verify(user_id):
     data = request.get_json()
     if not data:
