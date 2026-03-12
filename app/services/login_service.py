@@ -1,11 +1,8 @@
 from datetime import datetime, timedelta, UTC
 from app.models.user import User
 import jwt
-import os
 from bcrypt import checkpw
-
-SECRET = os.getenv("JWT_SECRET")
-TOKEN_EXP = os.getenv("JWT_EXPTIME")
+from app.utils.utils import get_config
 
 def login(db, email: str, password: str):
     user = db.query(User).filter_by(email=email).first()
@@ -19,9 +16,9 @@ def login(db, email: str, password: str):
         {
             "sub": user.id,
             "iat": datetime.now(UTC),
-            "exp": datetime.now(UTC) + timedelta(hours=int(TOKEN_EXP))
+            "exp": datetime.now(UTC) + timedelta(hours=int(get_config("JWT_EXPTIME", 10)))
         },
-        SECRET,
+        get_config("JWT_SECRET", "DEFAULT_VALUE"),
         algorithm="HS256"
     )
     return token

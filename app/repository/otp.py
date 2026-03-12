@@ -3,11 +3,11 @@ from app.models.otp import Otp
 from app.models.user import User
 from datetime import datetime
 
-def create(user_id:int, token:str, valid_at:datetime):
+def create(user_id:int, token_hash:str, valid_at:datetime):
     with SessionLocal() as db:
         otp = Otp (
             user_id=user_id,
-            code=token,
+            code=token_hash,
             valid_at=valid_at
         )
         db.add(otp)
@@ -33,7 +33,7 @@ def remove(otp_id):
     
 def remove_by_user_id(user_id):
     with SessionLocal() as db:
-        otp = db.query(otp).filter_by(user_id = user_id).first()
+        otp = db.query(Otp).filter_by(user_id = user_id).first()
         if otp is None:
             return None
         db.delete(otp)
@@ -45,6 +45,6 @@ def clean_user_id(user_id):
         otps = db.query(Otp).filter_by(user_id = user_id).all()
         if otps:
             for otp in otps:
-                db.delete(otps)
+                db.delete(otp)
         db.commit()
         return True
