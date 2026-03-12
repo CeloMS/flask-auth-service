@@ -56,6 +56,7 @@ def clean_user_id(user_id):
     with SessionLocal() as db:
         try:
             db.query(Otp).filter_by(user_id=user_id).delete()
+            db.commit()
             return True
         except Exception:
             db.rollback()
