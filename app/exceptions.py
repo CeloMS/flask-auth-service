@@ -22,8 +22,12 @@ class UserNotFound(AppError):
         
 class OtpExpired(AppError):
     def __init__(self):
-        super().__init__("User not found", 403)
+        super().__init__("Expired Otp", 403)
 
 class InvalidOtp(AppError):
     def __init__(self):
-        super().__init__("User not found", 403)
+        super().__init__("Invalid Otp", 403)
+
+class OtpNotFound(AppError):
+    def __init__(self):
+        super().__init__("Otp not found", 403)

@@ -15,7 +15,7 @@ def remove_by_id(user_id):
             return None
         db.delete(user)
         db.commit()
-        return user
+        return True
 
 def remove_by_email(email):
     with SessionLocal() as db:
@@ -24,8 +24,8 @@ def remove_by_email(email):
             return None
         db.delete(user)
         db.commit()
-        return user
-
+        return True
+    
 def update_by_id(user_id, data):
     with SessionLocal() as db:
         user = db.get(User, user_id)

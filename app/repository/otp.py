@@ -1,29 +1,50 @@
 from app.database import SessionLocal
+from app.models.otp import Otp
+from app.models.user import User
+from datetime import datetime
 
-def create_by_user(user_id):
+def create(user_id:int, token:str, valid_at:datetime):
     with SessionLocal() as db:
-        pass
-
-def create_by_email(email):
-    with SessionLocal() as db:
-        pass
-
-def remove_by_id(id):
-    with SessionLocal() as db:
-        pass
-
-def remove_by_user(user_id):
-    with SessionLocal() as db:
-        pass
-
-def remove_by_email(email):
-    with SessionLocal() as db:
-        pass
+        otp = Otp (
+            user_id=user_id,
+            code=token,
+            valid_at=valid_at
+        )
+        db.add(otp)
+        db.commit()
+        return otp
     
-def read_by_id(id):
+def get(otp_id):
     with SessionLocal() as db:
-        pass
-
-def read_by_user(user_id):
+        return db.get(Otp, otp_id)
+        
+def get_by_user_id(user_id):
     with SessionLocal() as db:
-        pass
+        return db.query(Otp).filter_by(user_id=user_id).first()
+    
+def remove(otp_id):
+    with SessionLocal() as db:
+        otp = db.get(Otp, otp_id)
+        if otp is None:
+            return None
+        db.delete(otp)
+        db.commit()
+        return True
+    
+def remove_by_user_id(user_id):
+    with SessionLocal() as db:
+        otp = db.query(otp).filter_by(user_id = user_id).first()
+        if otp is None:
+            return None
+        db.delete(otp)
+        db.commit()
+        return otp
+    
+def clean_user_id(user_id):
+    with SessionLocal() as db:
+        otps = db.query(Otp).filter_by(user_id = user_id).all()
+        if otps:
+            for otp in otps:
+                db.delete(otps)
+        db.commit()
+        return True

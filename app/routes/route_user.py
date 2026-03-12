@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 import app.services.user_service as user_service
-from app.exceptions import AppError
+
 user_bp = Blueprint('user', __name__, url_prefix='/users')
 
 @user_bp.route('/', methods = ['POST'])
