@@ -2,16 +2,19 @@ from datetime import datetime, timedelta, UTC
 from app.models.user import User
 import jwt
 from bcrypt import checkpw
+import app.repository.user as user_repository
+import app.repository.otp as otp_repository
+from app.exceptions import UserNotFound, InvalidCredentials, EmailNotConfirmed
 from app.utils.utils import get_config
 
-def login(db, email: str, password: str):
-    user = db.query(User).filter_by(email=email).first()
+def login(email: str, password: str):
+    user = user_repository.get_user_by_email(email)
     if user is None:
-        return None
+        return UserNotFound()
     if not checkpw(password.encode('utf-8'), user.password_hash.encode('utf-8')):
-        return None
+        return InvalidCredentials()
     if not user.validated:
-        return 
+        return EmailNotConfirmed()
     token = jwt.encode(
         {
             "sub": user.id,
