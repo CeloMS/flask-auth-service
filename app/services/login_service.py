@@ -8,13 +8,13 @@ from app.exceptions import UserNotFound, InvalidCredentials, EmailNotConfirmed
 from app.utils.utils import get_config
 
 def login(email: str, password: str):
-    user = user_repository.get_user_by_email(email)
+    user = user_repository.get_by_email(email)
     if user is None:
-        return UserNotFound()
+        raise UserNotFound()
     if not checkpw(password.encode('utf-8'), user.password_hash.encode('utf-8')):
-        return InvalidCredentials()
+        raise InvalidCredentials()
     if not user.validated:
-        return EmailNotConfirmed()
+        raise EmailNotConfirmed()
     token = jwt.encode(
         {
             "sub": user.id,

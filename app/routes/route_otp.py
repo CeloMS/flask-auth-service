@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
-from app.exceptions import AppError
 import app.services.otp_service as otp_service
+from app.exceptions import BadRequest
 
 otp_bp = Blueprint('otp', __name__, url_prefix='/otps')
 
@@ -23,9 +23,9 @@ def delete(user_id):
 def verify(user_id):
     data = request.get_json()
     if not data:
-        return jsonify({"error": "No data provided"}), 400
+        raise BadRequest("No data provided")
     otp = data.get("otp")
     if not otp:
-        return jsonify({"error": "Missing 'otp' field"}), 400
-    if otp_service.validate_otp(user_id=user_id, code=otp):
+        raise BadRequest("Missing 'otp' field")
+    if otp_service.validate_otp(user_id=user_id, user_otp=otp):
         return jsonify({"message": "OTP verified successfully"}), 200

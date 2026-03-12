@@ -4,6 +4,7 @@ from app.database import load_db
 from app.exceptions import AppError
 from app.routes.route_user import user_bp
 from app.routes.route_otp import otp_bp
+from app.routes.route_login import login_bp
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
 from sqlalchemy.exc import SQLAlchemyError
@@ -45,6 +46,7 @@ def create_app():
 
     app.register_blueprint(user_bp)
     app.register_blueprint(otp_bp)
+    app.register_blueprint(login_bp)
     return app
 
 

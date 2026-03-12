@@ -1,3 +1,4 @@
+from email import charset
 import secrets
 from datetime import datetime, UTC, timedelta
 import app.repository.otp as otp_repository
@@ -6,12 +7,13 @@ from app.exceptions import UserNotFound, InvalidOtp, OtpExpired, OtpNotFound
 from bcrypt import checkpw
 from app.utils.utils import get_config, transform_to_hash
 
-def generate_token(length):
+def generate_token(length=None):
     if length is None:
         length = get_config("OTP_LENGTH", 6)
-    return ''.join(secrets.choice(get_config("OTP_CHARSET"), "123456789") for _ in range(int(length)))
+    charset = get_config("OTP_CHARSET", "123456789")
+    return ''.join(secrets.choice(charset) for _ in range(int(length)))
 
-def create(user_id: int, minutes_valid):
+def create(user_id: int, minutes_valid=None):
     if minutes_valid is None:
         minutes_valid = get_config("OTP_DURATION", 15)
     token = generate_token()

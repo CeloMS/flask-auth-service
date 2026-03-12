@@ -31,3 +31,7 @@ class InvalidOtp(AppError):
 class OtpNotFound(AppError):
     def __init__(self):
         super().__init__("Otp not found", 403)
+        
+class BadRequest(AppError):
+    def __init__(self, message="Invalid request"):
+        super().__init__(message, 400)
