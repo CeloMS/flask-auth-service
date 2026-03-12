@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from app.database import SessionLocal
+from app.exceptions import AppError
 import app.services.login_service as logins
 
 login_bp = Blueprint('login', __name__, url_prefix='/login')
@@ -20,5 +21,5 @@ def login():
             return jsonify({
                 "token": result
             }), 200
-    except Exception as e:
-        return jsonify({"error": f"Something has gone wrong\n{e}"}), 500
+    except AppError as e:
+        return jsonify({"error": f"Something has gone wrong"}), 500

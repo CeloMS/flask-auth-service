@@ -6,6 +6,7 @@ from app.routes.route_user import user_bp
 from app.routes.route_otp import otp_bp
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
+from sqlalchemy.exc import SQLAlchemyError
 
 def load_env():
     env_path = find_dotenv()
@@ -32,7 +33,15 @@ def create_app():
     def handle_app_error(e):
         return jsonify({"error": e.message}), e.status_code
     
+    def handle_db_error(e):
+        return jsonify({"error": "Database error"}), 500
+
+    def handle_unexpected(e):
+        return jsonify({"error": "Unexpected server error"}), 500
+    
     app.register_error_handler(AppError, handle_app_error)
+    app.register_error_handler(SQLAlchemyError, handle_db_error)
+    app.register_error_handler(Exception, handle_unexpected)
 
     app.register_blueprint(user_bp)
     app.register_blueprint(otp_bp)

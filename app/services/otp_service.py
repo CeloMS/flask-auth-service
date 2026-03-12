@@ -30,8 +30,9 @@ def get(user_id):
     otp = otp_repository.get_by_user_id(user_id=user_id)
     if otp is None:
         raise OtpNotFound()
+    return otp
     
-def validate_otp(user_id: int, otp: str) -> bool:
+def validate_otp(user_id: int, user_otp: str) -> bool:
     otp = otp_repository.get_by_user_id(user_id=user_id)
     if otp is None:
         raise InvalidOtp()
@@ -39,7 +40,7 @@ def validate_otp(user_id: int, otp: str) -> bool:
     if now > otp.valid_at:
         otp_repository.remove_by_user_id(user_id=user_id)
         raise OtpExpired()
-    if not checkpw(otp.encode('utf-8'), otp.code.decode('utf-8')):
+    if not checkpw(user_otp.encode('utf-8'), otp.code.encode('utf-8')):
         raise InvalidOtp()
     user_repository.update_by_id(user_id=user_id, data={'validated': True})
     return True
