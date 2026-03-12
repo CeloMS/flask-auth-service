@@ -54,12 +54,8 @@ def remove_by_user_id(user_id):
 
 def clean_user_id(user_id):
     with SessionLocal() as db:
-        otps = db.query(Otp).filter_by(user_id = user_id).all()
-        if otps:
-            for otp in otps:
-                db.delete(otp)
         try:
-            db.commit()
+            db.query(Otp).filter_by(user_id=user_id).delete()
             return True
         except Exception:
             db.rollback()

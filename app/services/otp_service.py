@@ -4,17 +4,18 @@ import app.repository.otp as otp_repository
 import app.repository.user as user_repository
 from app.exceptions import UserNotFound, InvalidOtp, OtpExpired, OtpNotFound
 from bcrypt import checkpw
-from app.utils.utils import get_config, transform_to_hash
+from app.utils.utils import transform_to_hash
+from app.config import Settings
 
 def generate_token(length=None):
     if length is None:
-        length = get_config("OTP_LENGTH", 6)
-    charset = get_config("OTP_CHARSET", "123456789")
+        length = Settings.OTP_LENGTH
+    charset = Settings.OTP_CHARSET
     return ''.join(secrets.choice(charset) for _ in range(int(length)))
 
 def create(user_id: int, minutes_valid=None):
     if minutes_valid is None:
-        minutes_valid = get_config("OTP_DURATION", 15)
+        minutes_valid = Settings.OTP_DURATION
     token = generate_token()
     if user_repository.get_by_id(user_id=user_id) is None:
         raise UserNotFound()

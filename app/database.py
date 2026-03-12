@@ -5,7 +5,7 @@ DATABASE_URL = "sqlite:///database.db"
 engine = create_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(
     bind=engine,
-    autoflush=True,
+    autoflush=False,
     autocommit=False
 )
 Base = declarative_base()

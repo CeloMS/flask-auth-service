@@ -1,11 +1,9 @@
 from datetime import datetime, timedelta, UTC
-from app.models.user import User
 import jwt
 from bcrypt import checkpw
 import app.repository.user as user_repository
-import app.repository.otp as otp_repository
 from app.exceptions import UserNotFound, InvalidCredentials, EmailNotConfirmed
-from app.utils.utils import get_config
+from app.config import Settings
 
 def login(email: str, password: str):
     user = user_repository.get_by_email(email)
@@ -17,11 +15,11 @@ def login(email: str, password: str):
         raise EmailNotConfirmed()
     token = jwt.encode(
         {
-            "sub": user.id,
+            "sub": str(user.id),
             "iat": datetime.now(UTC),
-            "exp": datetime.now(UTC) + timedelta(hours=int(get_config("JWT_EXPTIME", 10)))
+            "exp": datetime.now(UTC) + timedelta(hours=Settings.JWT_EXPTIME)
         },
-        get_config("JWT_SECRET", "DEFAULT_VALUE"),
+        Settings.JWT_SECRET,
         algorithm="HS256"
     )
     return token
