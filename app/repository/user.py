@@ -12,7 +12,7 @@ def create(email, password_hash):
             db.rollback()
             raise
 
-def remove_by_id(user_id):
+def remove(user_id):
     with SessionLocal() as db:
         user = db.get(User, user_id)
         if user is None:
@@ -37,7 +37,20 @@ def remove_by_email(email):
         except Exception:
             db.rollback()
             raise
-    
+
+def remove_by_uuid(user_uuid):
+    with SessionLocal() as db:
+        user = db.query(User).filter_by(uuid=user_uuid).first()
+        if user is None:
+            return None
+        try:
+            db.delete(user)
+            db.commit()
+            return True
+        except Exception:
+            db.rollback()
+            raise
+
 def update_by_id(user_id, data):
     with SessionLocal() as db:
         user = db.get(User, user_id)
@@ -52,10 +65,28 @@ def update_by_id(user_id, data):
             db.rollback()
             raise
 
-def get_by_id(user_id):
+def update_by_uuid(user_uuid, data):
+    with SessionLocal() as db:
+        user = db.query(User).filter_by(uuid=user_uuid).first()
+        if user is None:
+            return None
+        for k, v in data.items():
+            setattr(user, k, v)
+        try:
+            db.commit()
+            return user
+        except Exception:
+            db.rollback()
+            raise
+
+def get(user_id):
     with SessionLocal() as db:
         return db.get(User, user_id)
-
+    
+def get_uuid(user_uuid):
+    with SessionLocal() as db:
+        return db.query(User).filter_by(uuid=user_uuid).first()
+    
 def get_by_email(email):
     with SessionLocal() as db:
         return db.query(User).filter_by(email=email).first()

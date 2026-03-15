@@ -13,5 +13,6 @@ class Settings:
         self.OTP_CHARSET = os.getenv("OTP_CHARSET", "1234567890")
         self.GMAIL = os.getenv("GMAIL")
         self.GMAIL_PASSWORD = os.getenv("GMAIL_PASSWORD")
-
+        self.DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///app.db")
+        
 settings = Settings()

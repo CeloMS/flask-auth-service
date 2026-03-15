@@ -16,7 +16,7 @@ def login(email: str, password: str):
     now = datetime.now(UTC)
     token = jwt.encode(
         {
-            "sub": str(user.id),
+            "sub": str(user.uuid),
             "iat": now,
             "exp": now + timedelta(hours=settings.JWT_EXPTIME)
         },

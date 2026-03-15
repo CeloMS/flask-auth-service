@@ -13,24 +13,24 @@ def add():
     except KeyError as err:
         raise BadRequest(f"Missing argument: {err.args[0]}")
 
-@user_bp.route('/<int:user_id>', methods = ['GET'])
-def get(user_id):
-    user = user_service.get_id(user_id)
+@user_bp.route('/<int:user_uuid>', methods = ['GET'])
+def get(user_uuid):
+    user = user_service.get_uuid(user_uuid)
     return jsonify(user.to_dict()), 200
     
 
-@user_bp.route('/<int:user_id>', methods = ['PUT'])
-def update(user_id):
+@user_bp.route('/<int:user_uuid>', methods = ['PUT'])
+def update(user_uuid):
     data = request.get_json()
     if not data:
         raise BadRequest("No data provided")
     try:
-        user = user_service.update_data(user_id, data)
+        user = user_service.update_data_by_uuid(user_uuid, data)
         return jsonify(user.to_dict()), 200
     except KeyError as err:
         raise BadRequest(f"Missing argument: {err.args[0]}")
 
-@user_bp.route('/<int:user_id>', methods = ['DELETE'])
-def delete(user_id):
-    user_service.delete_id(user_id)
+@user_bp.route('/<int:user_uuid>', methods = ['DELETE'])
+def delete(user_uuid):
+    user_service.delete_by_uuid(user_uuid)
     return '', 204

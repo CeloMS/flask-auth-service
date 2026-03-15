@@ -22,7 +22,15 @@ def create(user_id: int, minutes_valid=None):
     otp_repository.clean_user_id(user_id=user_id)
     otp_repository.create(user_id, transform_to_hash(token),  datetime.now(UTC)+ timedelta(minutes=int(minutes_valid)))
     return token
-    
+
+def create_by_uuid(user_uuid: int, minutes_valid=None):
+    if minutes_valid is None:
+        minutes_valid = settings.OTP_DURATION
+    user = user_repository.get_by_uuid(user_uuid=user_uuid)
+    if user is None:
+        raise UserNotFound()
+    return create(user_id=user.id, minutes_valid=minutes_valid)
+
 def remove(user_id):
     otp = otp_repository.remove_by_user_id(user_id)
     if otp is None:
@@ -48,3 +56,9 @@ def validate_otp(user_id: int, user_otp: str) -> bool:
     user_repository.update_by_id(user_id=user_id, data={'validated': True})
     otp_repository.remove_by_user_id(user_id=user_id)
     return True
+
+def validate_otp_by_uuid(user_uuid: int, user_otp: str) -> bool:
+    user = user_repository.get_by_uuid(user_uuid=user_uuid)
+    if user is None:
+        raise UserNotFound()
+    return validate_otp(user_id=user.id, user_otp=user_otp)
