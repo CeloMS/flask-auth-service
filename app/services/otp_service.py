@@ -37,12 +37,16 @@ def remove(user_id):
         raise InvalidOtp()
     return True
 
-def get(user_id):
-    otp = otp_repository.get_by_user_id(user_id=user_id)
-    if otp is None:
-        raise OtpNotFound()
-    return otp
-    
+def remove_by_uuid(user_uuid):
+    user = user_repository.get_by_uuid(user_uuid=user_uuid)
+    if user is None:
+        raise UserNotFound()
+    return remove(user_id=user.id)
+    user = user_repository.get_by_uuid(user_uuid=user_uuid)
+    if user is None:
+        raise UserNotFound()
+    return get(user_id=user.id)
+
 def validate_otp(user_id: int, user_otp: str) -> bool:
     otp = otp_repository.get_by_user_id(user_id=user_id)
     if otp is None:

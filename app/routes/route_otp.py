@@ -6,12 +6,12 @@ otp_bp = Blueprint('otp', __name__, url_prefix='/otps')
 
 @otp_bp.route('/<int:user_uuid>', methods = ['POST'])
 def add(user_uuid):
-    token = otp_service.create(user_id, None)
+    token = otp_service.create_by_uuid(user_uuid, None)
     return jsonify({"otp": token}), 201
     
 @otp_bp.route('/<int:user_uuid>', methods = ['DELETE'])
 def delete(user_uuid):
-    if otp_service.remove(user_id):
+    if otp_service.remove_by_uuid(user_uuid):
             return '', 204
 
 @otp_bp.route('/<int:user_uuid>/verify', methods=['POST'])
